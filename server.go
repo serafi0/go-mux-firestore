@@ -16,8 +16,9 @@ func main(){
 	fmt.Fprintln(response,"Up and running...")
 
  })
+ router.HandleFunc("/posts",getPosts).Methods("Get")
  log.Println("Server listening on port", port)
-http.ListenAndServe(port, router)
+// http.ListenAndServe(port, router)
 log.Fatalln(http.ListenAndServe(port,router))
 
 }
