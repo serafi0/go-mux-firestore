@@ -4,10 +4,19 @@ import (
 "net/http"
 "fmt"
 "log"	
+"github.com/joho/godotenv"
+
 
 )
 
 func main(){
+
+  err := godotenv.Load(".env")
+
+  if err != nil {
+    log.Fatalf("Error loading .env file")
+  }
+
  router := mux.NewRouter();
 
  const port string = ":8000"
@@ -20,6 +29,7 @@ func main(){
  router.HandleFunc("/posts",addPost).Methods("POST")
 
  log.Println("Server listening on port", port)
+
 // http.ListenAndServe(port, router)
 log.Fatalln(http.ListenAndServe(port,router))
 
