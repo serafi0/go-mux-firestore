@@ -5,6 +5,10 @@ import (
 	"server/entity"
 	"cloud.google.com/go/firestore"
 	"log"
+	
+
+	"google.golang.org/api/iterator"
+
 
 )
 
@@ -51,25 +55,36 @@ func (*repo) Save(post *entity.Post) (*entity.Post,error){
 
 func(*repo) FindAll() ([]entity.Post,error){
 		ctx := context.Background();
+
 	client,err :=firestore.NewClient(ctx,projectId)
 	if err !=nil{
 		log.Fatalf("couldn't connect to firestore : %v",err)
+		return nil,err
 	}
 	defer client.Close()
 
 	var posts[ ]entity.Post
-	iterator :=client.Collection(collectionName).Documents(ctx)
+	document_loop :=client.Collection(collectionName).Documents(ctx)
 	for {
-		doc, err:=iterator.Next()
+		doc, err:=document_loop.Next()
+		if err == iterator.Done {
+			break
+		}
+
 		if err!=nil{
-			log.Fatalf("Failed to iterate a list of post %v", err)
+			// log.Fatalf("Failed to iterate a list of post %v", err)
+			return nil,err
+	
 
 		}
-		post :=entity.Post{
-			Id : doc.Data()["ID"].(int),
+		post:=entity.Post{
+			Id : doc.Data()["ID"].(int64),
 			Title:doc.Data()["Title"].(string),
 			Text:doc.Data()["Text"].(string),
 
+		}
+		if err!=nil{
+			return nil,err
 		}
 		posts = append(posts,post)
 	}

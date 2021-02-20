@@ -23,7 +23,11 @@ func getPosts(resp http.ResponseWriter, req *http.Request){
 	posts, err := repo.FindAll()
 	if err !=nil {
 		resp.WriteHeader(http.StatusInternalServerError)
-		resp.Write([]byte(`{"error : "Error getting the post"}`))
+		resp.Write([]byte(`{"error" : "Error getting the post"}`))
+		// json.N
+		// resp.Write(err)
+
+		
 	} 
 	resp.WriteHeader(http.StatusOK)
 	json.NewEncoder(resp).Encode(posts)
@@ -41,7 +45,7 @@ func addPost(resp http.ResponseWriter, req *http.Request){
 		resp.Write([]byte(`"{"error :"Error unmarchalling the request "}`))
 		return
 	}
-	post.Id = rand.Int()
+	post.Id = rand.Int63()
 	repo.Save(&post)
 	resp.WriteHeader(http.StatusOK)
 	result, err := json.Marshal(post)
